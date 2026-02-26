@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calmly Garden</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e110f;--s1:#161a17;--s2:#1c211d;--s3:#222820;
+  --b1:#2a3028;--b2:#333d30;--b3:#3d4a38;
+  --t1:#d4e0cc;--t2:#8fa885;--t3:#5a6e54;
+  --green:#6aad6e;--green2:#4d8f51;
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --red:#c96a5a;--blue:#5a8fad;--purple:#8a6aad;--teal:#5aad9a;--orange:#c9884c;--pink:#c96a8a;
+  --shadow:rgba(0,0,0,0.55);--r:10px;--rsm:6px
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+/* HEADER */
+#header{display:flex;align-items:center;gap:12px;padding:0 18px;height:52px;background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;flex-wrap:wrap}
+#header h1{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;flex-shrink:0}
+.hsep{width:1px;height:16px;background:var(--b1);flex-shrink:0}
+.hchip{display:flex;align-items:center;gap:5px;padding:3px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rsm);font-weight:600;font-size:0.82rem}
+.hchip.gold{color:var(--gold2)}.hdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--gold);box-shadow:0 0 5px var(--gold)}
+.hdot.g{background:var(--teal);box-shadow:0 0 4px var(--teal)}
+#ppm-tag{font-size:0.62rem;color:var(--t3);font-weight:400}
+.hlevel{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--t2);padding:3px 9px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rsm)}
+.hlevel strong{color:var(--t1);font-weight:600}
+.hxpbar{width:50px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden}
+.hxpfill{height:100%;background:var(--green2);border-radius:2px;transition:width .4s}
+.hactions{margin-left:auto;display:flex;gap:5px;align-items:center}
+.hbtn{background:none;border:1px solid var(--b1);color:var(--t2);border-radius:var(--rsm);padding:4px 9px;font-size:0.67rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:all .15s}
+.hbtn:hover{border-color:var(--b2);color:var(--t1);background:var(--s2)}
+#autosave-tag{font-size:0.58rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+
+/* LAYOUT */
+#main{display:block;min-height:calc(100vh - 52px);position:relative}
+
+/* GARDEN */
+#garden-area{padding:18px 20px;overflow-y:auto}
+.sec-label{font-size:0.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+#stats-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.stat-pill{padding:2px 8px;background:var(--s2);border:1px solid var(--b1);border-radius:100px;font-size:0.66rem;color:var(--t2);font-weight:500}
+.stat-pill.hi{border-color:var(--gold);color:var(--gold)}
+.stat-pill.red{border-color:var(--red);color:var(--red)}
+
+/* Season */
+#season-bar{display:flex;align-items:center;gap:10px;padding:6px 12px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);margin-bottom:12px;font-size:0.76rem}
+.sicon{font-size:1.1rem}.sinfo{flex:1}.sname{font-weight:600}.seffect{font-size:0.62rem;color:var(--t3)}
+.sprogress{width:70px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden}
+.sfill{height:100%;border-radius:2px;transition:width 1s linear}
+
+/* Active seed */
+#active-seed{display:none;align-items:center;gap:7px;padding:6px 11px;margin-bottom:10px;background:var(--s2);border:1px solid var(--green2);border-radius:var(--r);font-size:0.75rem;font-weight:500}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);flex-shrink:0}
+#deselect-btn{margin-left:auto;background:none;border:none;color:var(--t3);cursor:pointer;font-size:.95rem;padding:0 2px}
+
+/* Zone */
+.zone-hdr{display:flex;align-items:center;gap:7px;margin:16px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--b1)}
+.zone-title{font-size:0.67rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.zone-info{font-size:0.62rem;color:var(--t3);margin-left:auto}
+.zone-info.on{color:var(--green2)}
+.garden-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px;margin-bottom:4px}
+
+/* Plot */
+.plot{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px 9px 9px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;min-height:138px;text-align:center;position:relative;user-select:none;transition:border-color .15s,transform .15s,box-shadow .2s}
+.plot:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 6px 18px var(--shadow)}
+.plot.empty{border-style:dashed;opacity:.45}
+.plot.empty:hover{opacity:1;border-color:var(--green2)}
+.picon{font-size:2.1rem;line-height:1;transition:transform .25s;margin-bottom:1px}
+.plot:hover .picon{transform:scale(1.09)}
+.pname{font-size:0.68rem;font-weight:600;color:var(--t1)}
+.pstate{font-size:0.58rem;color:var(--t3)}
+.pbar-wrap{width:100%;height:3px;background:var(--s3);border-radius:2px;overflow:hidden;margin-top:1px}
+.pbar{height:100%;border-radius:2px;background:var(--green2);transition:width .5s linear;position:relative;overflow:hidden}
+.pbar::after{content:'';position:absolute;top:0;left:-30px;width:20px;height:100%;background:rgba(255,255,255,.2);transform:skewX(-20deg);animation:shim 2s infinite}
+@keyframes shim{to{left:130%}}
+.hvbtn{background:var(--s3);border:1px solid var(--green2);color:var(--green);padding:3px 9px;border-radius:var(--rsm);font-size:0.63rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-top:2px;transition:background .15s,color .15s;white-space:nowrap}
+.hvbtn:hover{background:var(--green2);color:#fff}
+.abadge{position:absolute;top:5px;right:5px;background:var(--s3);border:1px solid var(--gold);color:var(--gold);font-size:.48rem;font-weight:600;padding:1px 4px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}
+@keyframes pop-in{0%{transform:scale(.5);opacity:.5}65%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+.plot.just-grew .picon{animation:pop-in .4s ease-out}
+@keyframes hglow{0%{box-shadow:0 0 0 0 rgba(106,173,110,.5)}50%{box-shadow:0 0 0 10px rgba(106,173,110,0)}100%{box-shadow:none}}
+.plot.harvesting{animation:hglow .35s ease-out}
+
+/* SIDE PANEL — DRAWER */
+#drawer-toggle{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:200;background:var(--s1);border:1px solid var(--b1);border-right:none;color:var(--t2);writing-mode:vertical-rl;text-orientation:mixed;padding:14px 7px;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--r) 0 0 var(--r);transition:background .15s,color .15s;user-select:none}
+#drawer-toggle:hover{background:var(--s2);color:var(--t1)}
+#drawer-toggle .dtarrow{display:block;font-size:.8rem;margin-top:6px;transition:transform .25s}
+#drawer-toggle.open .dtarrow{transform:rotate(180deg)}
+#side-panel{position:fixed;right:0;top:52px;height:calc(100vh - 52px);width:300px;background:var(--s1);border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;z-index:190;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:-6px 0 24px rgba(0,0,0,.4)}
+#side-panel.open{transform:translateX(0)}
+#garden-area{padding-right:44px}
+.ph{padding:12px 13px 0;flex-shrink:0}
+
+/* SCROLLABLE TABS */
+.tabs{display:flex;border-bottom:1px solid var(--b1);margin:8px 0 0;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;padding:7px 10px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:0.63rem;font-weight:500;color:var(--t3);cursor:pointer;letter-spacing:.06em;text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .15s,border-color .15s}
+.tab-btn:hover{color:var(--t2)}
+.tab-btn.active{color:var(--green);border-bottom-color:var(--green)}
+.tab-content{display:none;flex:1;overflow:hidden;flex-direction:column}
+.tab-content.active{display:flex}
+.pscroll{overflow-y:auto;flex:1;padding:10px 11px 18px}
+
+/* Generic list items */
+.cat-hdr{font-size:.57rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:9px 0 4px;border-bottom:1px solid var(--b1);margin-bottom:5px}
+.cat-hdr:first-child{padding-top:0}
+
+/* Seed row */
+.seed-row{display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:var(--rsm);cursor:pointer;border:1px solid transparent;transition:background .12s,border-color .12s;margin-bottom:2px}
+.seed-row:hover:not(.cant-afford):not(.locked-row){background:var(--s2)}
+.seed-row.selected{background:var(--s2);border-color:var(--green2)}
+.seed-row.cant-afford{opacity:.3;cursor:not-allowed}
+.seed-row.locked-row{opacity:.22;cursor:not-allowed}
+.sicon{font-size:1.35rem;flex-shrink:0;line-height:1}
+.smeta{flex:1;min-width:0}
+.sname{font-size:.73rem;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:4px}
+.ssub{font-size:.59rem;color:var(--t3);margin-top:1px}
+.sprice{font-size:.74rem;font-weight:600;color:var(--gold);flex-shrink:0}
+.rdot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.rc{background:var(--t3)}.rr{background:var(--blue);box-shadow:0 0 3px var(--blue)}
+.re{background:var(--purple);box-shadow:0 0 3px var(--purple)}.rl{background:var(--gold);box-shadow:0 0 4px var(--gold)}
+.rm{background:var(--red);box-shadow:0 0 5px var(--red)}
+
+/* Generic card (upgrades, workshop, crafting) */
+.card{display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:var(--rsm);background:var(--s2);border:1px solid var(--b1);margin-bottom:6px}
+.card.locked-card{opacity:.28}
+.card-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;line-height:1}
+.card-meta{flex:1;min-width:0}
+.card-name{font-size:.73rem;font-weight:600;color:var(--t1)}
+.card-desc{font-size:.61rem;color:var(--t3);margin-top:1px;line-height:1.5}
+.card-sub{font-size:.59rem;color:var(--t3);margin-top:3px}
+.pips{display:flex;gap:2px;margin-top:4px}
+.pip{width:11px;height:3px;border-radius:1px;background:var(--b2)}.pip.on{background:var(--green2)}
+.card-btn{background:none;border:1px solid var(--b2);color:var(--t2);border-radius:var(--rsm);padding:3px 8px;font-size:.63rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;margin-top:1px;transition:all .12s}
+.card-btn:hover:not(:disabled){background:var(--s3);border-color:var(--green2);color:var(--green)}
+.card-btn:disabled{opacity:.28;cursor:not-allowed}
+.card-btn.owned{color:var(--green2);border-color:var(--green2);cursor:default;opacity:1}
+.card-btn.gold-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+
+/* Market */
+.market-timer{font-size:.62rem;color:var(--t3);text-align:center;padding:5px 0 8px}
+.market-card{display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--rsm);background:var(--s2);border:1px solid var(--b1);margin-bottom:6px}
+.mc-icon{font-size:1.4rem;flex-shrink:0}
+.mc-meta{flex:1}.mc-name{font-size:.73rem;font-weight:600;color:var(--t1)}.mc-desc{font-size:.61rem;color:var(--t3)}
+.mc-price{font-size:.68rem;font-weight:600;color:var(--gold);flex-shrink:0;text-align:right;white-space:nowrap}
+.mc-price .old{text-decoration:line-through;color:var(--t3);font-size:.58rem;display:block}
+.mc-price .drop{color:var(--orange);font-size:.58rem;display:block}
+
+/* Crafting */
+.craft-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rsm);padding:9px;margin-bottom:6px}
+.craft-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.craft-icon{font-size:1.3rem;flex-shrink:0;line-height:1}
+.craft-info{flex:1}
+.craft-name{font-size:.73rem;font-weight:600;color:var(--t1)}
+.craft-rarity{font-size:.57rem;font-weight:600;padding:1px 5px;border-radius:3px;color:#fff;display:inline-block;margin-top:1px}
+.cr-common{background:var(--t3)}.cr-uncommon{background:var(--green2)}.cr-rare{background:var(--blue)}
+.cr-epic{background:var(--purple)}.cr-legendary{background:var(--gold);color:#3a2a00}
+.craft-desc{font-size:.61rem;color:var(--t3);margin-top:2px}
+.craft-reqs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.req-chip{display:flex;align-items:center;gap:3px;padding:2px 7px;border-radius:100px;font-size:.6rem;font-weight:600;border:1px solid var(--b2);color:var(--t2)}
+.req-chip.has{border-color:var(--green2);color:var(--green)}
+.req-chip.missing{border-color:var(--red);color:var(--red)}
+.craft-btn{width:100%;padding:5px;background:none;border:1px solid var(--b2);color:var(--t2);border-radius:var(--rsm);font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;cursor:pointer;transition:all .12s}
+.craft-btn:hover:not(:disabled){background:var(--s3);border-color:var(--green2);color:var(--green)}
+.craft-btn:disabled{opacity:.28;cursor:not-allowed}
+
+/* Fertilizer Slot */
+#fert-slot-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.fert-slot{position:relative;width:44px;height:44px;border-radius:50%;border:2px solid var(--b2);background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s,box-shadow .2s;flex-shrink:0}
+.fert-slot.active{border-color:var(--green);box-shadow:0 0 10px rgba(106,173,110,.4)}
+.fert-slot.empty-slot{border-style:dashed;opacity:.5}
+.fert-slot:hover{border-color:var(--green2)}
+.fert-slot-icon{font-size:1.4rem;line-height:1}
+.fert-slot-label{font-size:.6rem;position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);white-space:nowrap;color:var(--t3);font-weight:500}
+.fert-counter{position:absolute;top:-4px;right:-4px;background:var(--green2);color:#fff;border-radius:50%;width:15px;height:15px;font-size:.52rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.fert-slot-info{flex:1;min-width:0}
+.fert-slot-info .fname{font-size:.73rem;font-weight:600;color:var(--t1)}
+.fert-slot-info .fdesc{font-size:.61rem;color:var(--t3);margin-top:1px}
+.fert-unequip{background:none;border:1px solid var(--b2);color:var(--t3);border-radius:var(--rsm);padding:2px 7px;font-size:.6rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:auto;flex-shrink:0}
+.fert-unequip:hover{color:var(--red);border-color:var(--red)}
+
+/* Inventory bar */
+#inv-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.inv-chip{display:flex;align-items:center;gap:4px;padding:2px 8px;background:var(--s2);border:1px solid var(--b1);border-radius:100px;font-size:.64rem;color:var(--t2);font-weight:500;cursor:default}
+.inv-chip:hover{border-color:var(--b2)}
+
+/* Prestige */
+.prestige-box{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:13px;margin-bottom:8px}
+.prestige-title{font-family:'DM Serif Display',serif;font-size:.95rem;color:var(--gold2);margin-bottom:4px}
+.prestige-desc{font-size:.68rem;color:var(--t2);margin-bottom:9px;line-height:1.6}
+.pstat{font-size:.66rem;color:var(--t3);margin-bottom:2px}.pstat strong{color:var(--t2)}
+.prestige-btn{width:100%;padding:8px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:var(--rsm);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:background .15s;margin-top:7px}
+.prestige-btn:hover:not(:disabled){background:rgba(201,168,76,.1)}
+.prestige-btn:disabled{opacity:.3;cursor:not-allowed}
+
+/* Achievements */
+.ach-row{display:flex;align-items:flex-start;gap:8px;padding:7px 8px;border-radius:var(--rsm);background:var(--s2);border:1px solid var(--b1);margin-bottom:4px}
+.ach-row.done{border-color:rgba(201,168,76,.35)}
+.ach-row.todo{opacity:.28}
+.aicon{font-size:.9rem;flex-shrink:0;margin-top:1px;color:var(--t3)}
+.ach-row.done .aicon{color:var(--gold)}
+.aname{font-size:.72rem;font-weight:600;color:var(--t1)}.adesc{font-size:.59rem;color:var(--t3)}
+.areward{font-size:.59rem;color:var(--green);margin-top:1px;font-weight:600}
+
+/* Floats & Toasts */
+.fnum{position:fixed;pointer-events:none;font-size:.78rem;font-weight:600;color:var(--gold2);z-index:9999;animation:ffade .9s ease-out forwards}
+@keyframes ffade{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+#toasts{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:4px;z-index:9998;pointer-events:none;align-items:center}
+.toast{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:5px 13px;font-size:.72rem;font-weight:500;color:var(--t1);box-shadow:0 4px 16px var(--shadow);white-space:nowrap;animation:tin .2s ease-out,tout .2s ease-in 2.3s forwards}
+@keyframes tin{from{opacity:0;transform:translateY(6px)}}@keyframes tout{to{opacity:0;transform:translateY(-4px)}}
+@keyframes lvlup{0%{box-shadow:0 0 0 0 rgba(232,201,106,.7)}60%{box-shadow:0 0 0 20px rgba(232,201,106,0)}100%{box-shadow:none}}
+.lvlup-flash{animation:lvlup .7s ease-out}
+
+@media(max-width:700px){#garden-area{padding-right:44px}#side-panel{width:100%;top:52px}}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Calmly Garden</h1>
+  <div class="hsep"></div>
+  <div class="hchip gold"><div class="hdot"></div><span id="hcoins">100</span><span id="ppm-tag"></span></div>
+  <div class="hlevel">Lv.<strong id="hlvl">1</strong><div class="hxpbar"><div class="hxpfill" id="hxpfill" style="width:0%"></div></div><span id="hxplbl" style="font-size:.58rem;color:var(--t3)">0xp</span></div>
+  <div class="hchip" style="color:var(--teal)"><div class="hdot g"></div><span id="hprestige">×1.0</span></div>
+  <div class="hactions">
+    <span id="autosave-tag">Autosaved</span>
+    <button class="hbtn" id="sfx-btn">SFX ▸</button>
+    <button class="hbtn" id="reset-btn">Reset</button>
+  </div>
+</div>
+
+<div id="main">
+<button id="drawer-toggle" onclick="toggleDrawer()" title="Open/close shop">Shop<span class="dtarrow">◀</span></button>
+  <div id="garden-area">
+    <div id="stats-row"></div>
+    <div id="season-bar"></div>
+    <div id="fert-slot-bar"></div>
+    <div id="inv-bar"></div>
+    <div id="active-seed"><div class="sdot"></div><span id="active-label">—</span><button id="deselect-btn">×</button></div>
+    <div id="zones"></div>
+  </div>
+  <div id="side-panel">
+    <div class="ph">
+      <div class="sec-label" style="margin-bottom:0">Shop</div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="seeds">Seeds</button>
+        <button class="tab-btn" data-tab="farm">Farm</button>
+        <button class="tab-btn" data-tab="workshop">Workshop</button>
+        <button class="tab-btn" data-tab="crafting">Crafting</button>
+        <button class="tab-btn" data-tab="market">Market</button>
+        <button class="tab-btn" data-tab="prestige">Legacy</button>
+        <button class="tab-btn" data-tab="goals">Goals</button>
+      </div>
+    </div>
+    <div id="tab-seeds"    class="tab-content active"><div class="pscroll" id="sc-seeds"></div></div>
+    <div id="tab-farm"     class="tab-content"><div class="pscroll" id="sc-farm"></div></div>
+    <div id="tab-workshop" class="tab-content"><div class="pscroll" id="sc-workshop"></div></div>
+    <div id="tab-crafting" class="tab-content"><div class="pscroll" id="sc-crafting"></div></div>
+    <div id="tab-market"   class="tab-content"><div class="pscroll" id="sc-market"></div></div>
+    <div id="tab-prestige" class="tab-content"><div class="pscroll" id="sc-prestige"></div></div>
+    <div id="tab-goals"    class="tab-content"><div class="pscroll" id="sc-goals"></div></div>
+  </div>
+</div>
+<div id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+
+const SEASONS = [
+  {id:'spring',name:'Spring',icon:'🌸',effect:'Growth −20%, Drops +chance',growMod:.8, valMod:1.0, color:'#e88fa8',dur:120},
+  {id:'summer',name:'Summer',icon:'☀️', effect:'Fruit value +30%',         growMod:1.0,valMod:1.3, color:'#e8c96a',dur:120},
+  {id:'autumn',name:'Autumn',icon:'🍂',effect:'Rare drops +30% chance',    growMod:1.0,valMod:1.0, color:'#c9884c',dur:100},
+  {id:'winter',name:'Winter',icon:'❄️', effect:'Growth −30%, Value −15%',  growMod:1.3,valMod:.85, color:'#8ab4cc',dur:90},
+];
+
+const ZONES = [
+  {id:'meadow',    name:'Meadow',          icon:'🌿',unlockLv:1,  plots:6},
+  {id:'orchard',   name:'Orchard',         icon:'🌳',unlockLv:5,  plots:6},
+  {id:'grove',     name:'Grove',           icon:'🌲',unlockLv:10, plots:6},
+  {id:'highlands', name:'Highland Farm',   icon:'⛰️',unlockLv:18, plots:8},
+  {id:'greenhouse',name:'Greenhouse',      icon:'🪟',unlockLv:28, plots:8},
+  {id:'enchanted', name:'Enchanted Woods', icon:'✨',unlockLv:40, plots:10},
+];
+
+// Each tree now also drops MATERIALS on harvest (used for crafting)
+const TREES = [
+  // COMMON — Meadow
+  {id:'apple',  name:'Apple Tree',    stages:['🌱','🌿','🌳','🍎'],rarity:'common',zone:'meadow',   cost:10,  grow:12,val:18,  xp:2, drops:['apple_leaf']},
+  {id:'lemon',  name:'Lemon Tree',    stages:['🌱','🌿','🌲','🍋'],rarity:'common',zone:'meadow',   cost:15,  grow:15,val:24,  xp:2, drops:['citrus_peel']},
+  {id:'orange', name:'Orange Tree',   stages:['🌱','🌿','🌲','🍊'],rarity:'common',zone:'meadow',   cost:20,  grow:18,val:32,  xp:3, drops:['citrus_peel','flower_petal']},
+  {id:'pear',   name:'Pear Tree',     stages:['🌱','🌿','🌳','🍐'],rarity:'common',zone:'meadow',   cost:28,  grow:20,val:42,  xp:3, drops:['apple_leaf','wood_chip']},
+  {id:'fig',    name:'Fig Tree',      stages:['🌱','🌿','🌳','🫐'],rarity:'common',zone:'orchard',  cost:38,  grow:22,val:58,  xp:4, drops:['fig_resin']},
+  {id:'plum',   name:'Plum Tree',     stages:['🌱','🌿','🌸','💜'],rarity:'common',zone:'orchard',  cost:50,  grow:25,val:75,  xp:4, drops:['flower_petal','fig_resin']},
+  // RARE — Orchard/Grove
+  {id:'cherry', name:'Cherry Tree',   stages:['🌱','🌿','🌸','🍒'],rarity:'rare',  zone:'orchard',  cost:85,  grow:30,val:115, xp:6, drops:['blossom_dust','flower_petal']},
+  {id:'mango',  name:'Mango Tree',    stages:['🌱','🌿','🌴','🥭'],rarity:'rare',  zone:'orchard',  cost:110, grow:38,val:155, xp:7, drops:['tropical_sap','citrus_peel']},
+  {id:'grape',  name:'Grapevine',     stages:['🌱','🌿','🍀','🍇'],rarity:'rare',  zone:'grove',    cost:140, grow:42,val:195, xp:8, drops:['vine_tendril','fig_resin']},
+  {id:'coconut',name:'Coconut Palm',  stages:['🌱','🌿','🌴','🥥'],rarity:'rare',  zone:'grove',    cost:175, grow:45,val:235, xp:9, drops:['tropical_sap','wood_chip']},
+  {id:'pomegr', name:'Pomegranate',   stages:['🌱','🌿','🌺','❤️'],rarity:'rare',  zone:'grove',    cost:220, grow:50,val:290, xp:10,drops:['blossom_dust','vine_tendril']},
+  {id:'olive',  name:'Olive Tree',    stages:['🌱','🌿','🌳','🫒'],rarity:'rare',  zone:'grove',    cost:260, grow:52,val:340, xp:11,drops:['olive_oil','wood_chip']},
+  // EPIC — Highlands/Greenhouse
+  {id:'peach',  name:'Peach Tree',    stages:['🌱','🌿','🌸','🍑'],rarity:'epic',  zone:'highlands',cost:320, grow:55,val:420, xp:14,drops:['peach_nectar','blossom_dust']},
+  {id:'dragon', name:'Dragon Fruit',  stages:['🌱','🌿','🌵','🐉'],rarity:'epic',  zone:'highlands',cost:480, grow:58,val:640, xp:18,drops:['dragon_scale','tropical_sap']},
+  {id:'starfr', name:'Starfruit',     stages:['🌱','🌿','⭐','🌟'],rarity:'epic',  zone:'highlands',cost:650, grow:60,val:870, xp:22,drops:['stardust','blossom_dust']},
+  {id:'cacao',  name:'Cacao Tree',    stages:['🌱','🌿','🌲','🍫'],rarity:'epic',  zone:'greenhouse',cost:850,grow:63,val:1150,xp:28,drops:['cacao_bean','vine_tendril']},
+  {id:'vanilla',name:'Vanilla Vine',  stages:['🌱','🌿','🌸','🍦'],rarity:'epic',  zone:'greenhouse',cost:1100,grow:66,val:1500,xp:34,drops:['vanilla_pod','flower_petal']},
+  // LEGENDARY — Greenhouse/Enchanted
+  {id:'golden', name:'Golden Tree',   stages:['🌟','💫','🌠','✨'],rarity:'legend',zone:'greenhouse',cost:2200,grow:72,val:3200,xp:60,drops:['golden_sap','stardust']},
+  {id:'aurora',  name:'Aurora Bloom', stages:['🌱','🌈','🌺','🌌'],rarity:'legend',zone:'enchanted', cost:4500,grow:78,val:6500,xp:90,drops:['aurora_petal','stardust']},
+  {id:'moonvine',name:'Moonvine',     stages:['🌱','🌙','🌿','🌕'],rarity:'legend',zone:'enchanted', cost:9000,grow:84,val:13000,xp:140,drops:['moon_dew','golden_sap']},
+  // MYTHIC — Enchanted
+  {id:'worldtree',name:'World Tree',  stages:['🌱','🌿','🌳','🌍'],rarity:'mythic',zone:'enchanted', cost:22000,grow:90,val:32000,xp:280,drops:['world_essence','moon_dew']},
+  {id:'solartree',name:'Solar Tree',  stages:['🌱','🔥','🌞','☀️'],rarity:'mythic',zone:'enchanted', cost:55000,grow:98,val:85000,xp:550,drops:['solar_core','world_essence']},
+];
+
+const RARITY_GROUPS = [
+  {id:'common',label:'Common'},{id:'rare',label:'Rare'},
+  {id:'epic',label:'Epic'},{id:'legend',label:'Legendary'},{id:'mythic',label:'Mythic'},
+];
+
+// MATERIALS — dropped by trees on harvest (low chance per harvest)
+const MATERIALS = {
+  apple_leaf:   {name:'Apple Leaf',    icon:'🍃', rarity:'common',   dropChance:.40},
+  citrus_peel:  {name:'Citrus Peel',   icon:'🍋', rarity:'common',   dropChance:.38},
+  flower_petal: {name:'Flower Petal',  icon:'🌸', rarity:'common',   dropChance:.35},
+  wood_chip:    {name:'Wood Chip',     icon:'🪵', rarity:'common',   dropChance:.32},
+  fig_resin:    {name:'Fig Resin',     icon:'🫙', rarity:'common',   dropChance:.30},
+  blossom_dust: {name:'Blossom Dust',  icon:'✨', rarity:'uncommon', dropChance:.20},
+  vine_tendril: {name:'Vine Tendril',  icon:'🌿', rarity:'uncommon', dropChance:.18},
+  tropical_sap: {name:'Tropical Sap',  icon:'🧪', rarity:'uncommon', dropChance:.16},
+  olive_oil:    {name:'Olive Oil',     icon:'🫒', rarity:'uncommon', dropChance:.15},
+  peach_nectar: {name:'Peach Nectar',  icon:'🍑', rarity:'rare',     dropChance:.10},
+  dragon_scale: {name:'Dragon Scale',  icon:'🐉', rarity:'rare',     dropChance:.09},
+  stardust:     {name:'Stardust',      icon:'⭐', rarity:'rare',     dropChance:.08},
+  cacao_bean:   {name:'Cacao Bean',    icon:'🍫', rarity:'rare',     dropChance:.07},
+  vanilla_pod:  {name:'Vanilla Pod',   icon:'🌿', rarity:'rare',     dropChance:.07},
+  golden_sap:   {name:'Golden Sap',    icon:'💛', rarity:'epic',     dropChance:.05},
+  aurora_petal: {name:'Aurora Petal',  icon:'🌌', rarity:'epic',     dropChance:.04},
+  moon_dew:     {name:'Moon Dew',      icon:'🌕', rarity:'epic',     dropChance:.04},
+  world_essence:{name:'World Essence', icon:'🌍', rarity:'legendary',dropChance:.02},
+  solar_core:   {name:'Solar Core',    icon:'☀️', rarity:'legendary',dropChance:.02},
+};
+
+// CRAFTING RECIPES — equippable fertilizer bags
+// Each bag is permanent while equipped. `charges` = total harvests before it depletes.
+// While equipped, its effect applies to every harvest until charges run out.
+const RECIPES = [
+  // ── Tier 1 · Common ──
+  {id:'bag_basic',   name:'Basic Fertilizer',    icon:'🌿', rarity:'common',
+   desc:'−15% grow time while equipped',         effect:'grow',    val:{pct:.15}, charges:8,
+   req:{apple_leaf:3,wood_chip:2}},
+  {id:'bag_citrus',  name:'Citrus Mix',           icon:'🍋', rarity:'common',
+   desc:'+20% fruit value while equipped',        effect:'val',     val:{pct:.20}, charges:8,
+   req:{citrus_peel:3,flower_petal:2}},
+  {id:'bag_petal',   name:'Bloom Powder',         icon:'🌸', rarity:'common',
+   desc:'+15% double harvest chance while equipped',effect:'dbl',  val:{bonus:.15},charges:8,
+   req:{flower_petal:5,fig_resin:2}},
+  // ── Tier 2 · Uncommon ──
+  {id:'bag_resin',   name:'Resin Tonic',          icon:'🫙', rarity:'uncommon',
+   desc:'−25% grow time while equipped',          effect:'grow',    val:{pct:.25}, charges:15,
+   req:{fig_resin:4,blossom_dust:2,wood_chip:3}},
+  {id:'bag_tropic',  name:'Tropical Boost',       icon:'🧪', rarity:'uncommon',
+   desc:'+35% fruit value while equipped',         effect:'val',     val:{pct:.35}, charges:15,
+   req:{tropical_sap:3,vine_tendril:3,citrus_peel:2}},
+  {id:'bag_vine',    name:'Vine Enrichment',      icon:'🌿', rarity:'uncommon',
+   desc:'+30% double harvest chance while equipped',effect:'dbl',  val:{bonus:.30},charges:15,
+   req:{vine_tendril:4,blossom_dust:3,flower_petal:4}},
+  {id:'bag_olive',   name:'Olive Elixir',         icon:'🫒', rarity:'uncommon',
+   desc:'+3 passive coins/sec while equipped',     effect:'passive', val:{bonus:3},  charges:15,
+   req:{olive_oil:3,fig_resin:3,vine_tendril:2}},
+  // ── Tier 3 · Rare ──
+  {id:'bag_nectar',  name:'Nectar Infusion',      icon:'🍑', rarity:'rare',
+   desc:'−40% grow time while equipped',           effect:'grow',    val:{pct:.40}, charges:25,
+   req:{peach_nectar:3,tropical_sap:4,blossom_dust:5}},
+  {id:'bag_dragon',  name:'Dragon Fertilizer',    icon:'🐉', rarity:'rare',
+   desc:'×2 fruit value while equipped',           effect:'val_x',   val:{x:2},     charges:20,
+   req:{dragon_scale:2,cacao_bean:3,stardust:2}},
+  {id:'bag_star',    name:'Stardust Blend',       icon:'⭐', rarity:'rare',
+   desc:'+50% value and −20% grow while equipped', effect:'both',    val:{vpct:.50,gpct:.20},charges:20,
+   req:{stardust:4,vanilla_pod:2,peach_nectar:2}},
+  {id:'bag_cacao',   name:'Cacao Power Mix',      icon:'🍫', rarity:'rare',
+   desc:'Instant growth on all plots while equipped',effect:'instant',val:{},       charges:10,
+   req:{cacao_bean:5,vanilla_pod:3,dragon_scale:2}},
+  // ── Tier 4 · Epic ──
+  {id:'bag_golden',  name:'Golden Formula',       icon:'💛', rarity:'epic',
+   desc:'−50% grow time while equipped',           effect:'grow',    val:{pct:.50}, charges:40,
+   req:{golden_sap:3,stardust:5,peach_nectar:4}},
+  {id:'bag_aurora',  name:'Aurora Fertilizer',    icon:'🌌', rarity:'epic',
+   desc:'×3 fruit value while equipped',           effect:'val_x',   val:{x:3},     charges:35,
+   req:{aurora_petal:2,moon_dew:2,stardust:4,golden_sap:2}},
+  {id:'bag_moon',    name:'Moonlit Elixir',       icon:'🌕', rarity:'epic',
+   desc:'+100% fruit value while equipped',        effect:'val',     val:{pct:1.0}, charges:30,
+   req:{moon_dew:3,aurora_petal:2,golden_sap:3}},
+  // ── Tier 5 · Legendary ──
+  {id:'bag_world',   name:'World Essence',        icon:'🌍', rarity:'legendary',
+   desc:'×2 value and −30% grow while equipped',   effect:'both',    val:{vpct:1.0,gpct:.30},charges:50,
+   req:{world_essence:2,solar_core:1,moon_dew:4,aurora_petal:3}},
+  {id:'bag_solar',   name:'Solar Elixir',         icon:'☀️', rarity:'legendary',
+   desc:'×5 fruit value while equipped',           effect:'val_x',   val:{x:5},     charges:40,
+   req:{solar_core:2,world_essence:2,golden_sap:5,stardust:6}},
+];
+
+// FARM UPGRADES
+const UPGRADES = [
+  {id:'fert1', name:'Basic Fertilizer',  icon:'💧',cat:'Growth',   desc:'−12% grow time per level',    max:5,base:60,   mult:2.2,effect:'growSpeed'},
+  {id:'fert2', name:'Rich Compost',      icon:'🌿',cat:'Growth',   desc:'−10% grow time per level',    max:5,base:500,  mult:2.5,effect:'growSpeed',  req:'fert1:5'},
+  {id:'fert3', name:'Miracle Grow',      icon:'⚗️',cat:'Growth',   desc:'−8% grow time per level',     max:5,base:5000, mult:3.0,effect:'growSpeed',  req:'fert2:5'},
+  {id:'qual1', name:'Fruit Quality',     icon:'◈', cat:'Value',    desc:'+18% fruit value per level',   max:5,base:80,   mult:2.5,effect:'fruitValue'},
+  {id:'qual2', name:'Premium Grading',   icon:'💎',cat:'Value',    desc:'+15% fruit value per level',   max:5,base:700,  mult:2.8,effect:'fruitValue', req:'qual1:5'},
+  {id:'qual3', name:'Artisan Label',     icon:'🎖️',cat:'Value',    desc:'+12% fruit value per level',   max:5,base:7000, mult:3.2,effect:'fruitValue', req:'qual2:5'},
+  {id:'auto1', name:'Auto Harvest',      icon:'⟳', cat:'Auto',     desc:'Harvests ripe trees automatically',max:1,base:200,mult:99,effect:'autoHarvest'},
+  {id:'auto2', name:'Auto Planter',      icon:'⬡', cat:'Auto',     desc:'Replants active seed after harvest',max:1,base:500,mult:99,effect:'autoPlant',req:'auto1:1'},
+  {id:'auto3', name:'Smart Planter',     icon:'🧠',cat:'Auto',     desc:'Picks best seed when replanting',max:1,base:5000,mult:99,effect:'smartPlant',req:'auto2:1'},
+  {id:'bees',  name:'Beehive',           icon:'🐝',cat:'Passive',  desc:'+1 coin/sec passive income',   max:5,base:300,  mult:2.8,effect:'passive'},
+  {id:'rain',  name:'Rain Collector',    icon:'🌧️',cat:'Passive',  desc:'+20% double harvest chance',   max:3,base:800,  mult:3.0,effect:'doubleHarvest'},
+  {id:'plots1',name:'Expand Meadow',     icon:'▦', cat:'Plots',    desc:'Adds 2 plots to Meadow',       max:3,base:150,  mult:3.5,effect:'addPlots',zone:'meadow'},
+  {id:'plots2',name:'Expand Orchard',    icon:'▦', cat:'Plots',    desc:'Adds 2 plots to Orchard',      max:3,base:600,  mult:3.5,effect:'addPlots',zone:'orchard',req:'zone:orchard'},
+  {id:'plots3',name:'Expand Grove',      icon:'▦', cat:'Plots',    desc:'Adds 2 plots to Grove',        max:3,base:2500, mult:3.5,effect:'addPlots',zone:'grove',  req:'zone:grove'},
+  {id:'plots4',name:'Expand Highlands',  icon:'▦', cat:'Plots',    desc:'Adds 2 plots to Highlands',    max:3,base:10000,mult:3.5,effect:'addPlots',zone:'highlands',req:'zone:highlands'},
+];
+
+// WORKSHOP — one-time items
+const WORKSHOP = [
+  {id:'scarecrow',  name:'Scarecrow',          icon:'🪆',desc:'Prevents pest events',                cost:400,   req:'level:4'},
+  {id:'well',       name:'Ancient Well',        icon:'🪣',desc:'All plots grow 10% faster (permanent)',cost:1500, req:'level:8'},
+  {id:'beehive2',   name:'Queen Beehive',       icon:'🍯',desc:'Bee passive income ×3',               cost:3500,  req:'level:12'},
+  {id:'greenhouse_u',name:'Climate Control',   icon:'🌡️',desc:'Greenhouse ignores winter penalty',    cost:6000,  req:'zone:greenhouse'},
+  {id:'golden_soil',name:'Golden Soil',         icon:'✦', desc:'Legendary+ trees +25% value',         cost:15000, req:'level:25'},
+  {id:'timepiece',  name:'Timepiece',           icon:'⏳',desc:'All grow times −20% (permanent)',      cost:40000, req:'level:35'},
+  {id:'philosopher',name:"Philosopher's Stone", icon:'🔮',desc:'Mythic trees ×2 value',               cost:100000,req:'level:45'},
+  {id:'drop_boost', name:'Drop Amplifier',      icon:'💎',desc:'Material drop chance ×2',             cost:8000,  req:'level:20'},
+  {id:'inv_expand', name:'Storage Expansion',   icon:'🎒',desc:'Max material stack ×2',               cost:2000,  req:'level:10'},
+];
+
+// MARKET POOL
+const MARKET_POOL = [
+  {id:'springwater', name:'Spring Water',    icon:'💦', desc:'Next 5 harvests +50% value',         cost:200, effect:'val_uses',  val:{pct:.50,uses:5}},
+  {id:'sunlamp',     name:'Sun Lamp',        icon:'💡', desc:'Instantly grow 3 trees',             cost:300, effect:'instant_n', val:{n:3}},
+  {id:'xpbook',      name:'Growth Tome',     icon:'📖', desc:'+300 XP instantly',                  cost:350, effect:'xp',        val:300},
+  {id:'storm',       name:'Storm Flask',     icon:'⛈️', desc:'×2 coins on all harvests for 60s',   cost:800, effect:'x2_time',   val:{dur:60}},
+  {id:'goldpollen',  name:'Golden Pollen',   icon:'🌼', desc:'Next harvest ×8 value',              cost:1200,effect:'xN_next',   val:{x:8,uses:1}},
+  {id:'crystal',     name:'Time Crystal',    icon:'💠', desc:'All trees grow ×2 speed for 90s',    cost:2000,effect:'speed_time', val:{dur:90}},
+  {id:'moon',        name:'Moon Potion',     icon:'🌙', desc:'×3 value if harvested at night (21h-6h)',cost:3000,effect:'moon', val:1},
+  {id:'rainpotion',  name:'Rain Dance',      icon:'🌧️', desc:'+50% double harvest chance for 120s',cost:1500,effect:'rain_time', val:{dur:120}},
+  {id:'seedbox',     name:'Mystery Seed Box',icon:'🎁', desc:'Plant a free random rare tree',       cost:500, effect:'mystery',   val:1},
+  {id:'mapdrop',     name:'Drop Map',        icon:'🗺️', desc:'Guaranteed material from next 8 harvests',cost:700,effect:'drop_guarantee',val:{uses:8}},
+  {id:'coinrune',    name:'Coin Rune',        icon:'🪬', desc:'+500 coins instantly',               cost:400, effect:'coins',     val:500},
+  {id:'beeswarm',    name:'Bee Swarm',        icon:'🐝', desc:'+10 passive income for 120s',        cost:600, effect:'bee_time',  val:{bonus:10,dur:120}},
+  {id:'autoharvest', name:'Harvest Drone',   icon:'🚁', desc:'Auto-harvest all ready trees now',    cost:250, effect:'harvest_all',val:1},
+  {id:'craftmat',    name:'Material Chest',  icon:'📦', desc:'Receive 3 random materials',          cost:900, effect:'mat_chest', val:3},
+  {id:'valuescroll', name:'Value Scroll',    icon:'📜', desc:'+25% fruit value permanently (0.5 stack)',cost:5000,effect:'val_perm',val:{pct:.025}},
+];
+
+// ACHIEVEMENTS
+const ACHIEVEMENTS = [
+  {id:'fh',    icon:'▸',name:'First Harvest',     desc:'Harvest your first fruit',          reward:50,   test:s=>s.th>=1},
+  {id:'h10',   icon:'▸',name:'Getting Started',   desc:'Harvest 10 fruits',                 reward:200,  test:s=>s.th>=10},
+  {id:'h50',   icon:'▸',name:'Harvester',         desc:'Harvest 50 fruits',                 reward:600,  test:s=>s.th>=50},
+  {id:'h200',  icon:'▸',name:'Seasoned Farmer',   desc:'Harvest 200 fruits',                reward:2000, test:s=>s.th>=200},
+  {id:'h1000', icon:'▸',name:'Master Gardener',   desc:'Harvest 1,000 fruits',              reward:10000,test:s=>s.th>=1000},
+  {id:'h5000', icon:'▸',name:'Legend Grower',     desc:'Harvest 5,000 fruits',              reward:50000,test:s=>s.th>=5000},
+  {id:'c500',  icon:'◈',name:'First Savings',     desc:'Accumulate 500 coins at once',      reward:100,  test:s=>s.coins>=500},
+  {id:'c5k',   icon:'◈',name:'Investor',          desc:'Accumulate 5,000 coins',            reward:500,  test:s=>s.coins>=5000},
+  {id:'c50k',  icon:'◈',name:'Wealthy Farmer',    desc:'Accumulate 50,000 coins',           reward:3000, test:s=>s.coins>=50000},
+  {id:'c500k', icon:'◈',name:'Tycoon',            desc:'Accumulate 500,000 coins',          reward:20000,test:s=>s.coins>=500000},
+  {id:'lv5',   icon:'⬡',name:'Growing Up',        desc:'Reach level 5',                     reward:300,  test:s=>s.level>=5},
+  {id:'lv10',  icon:'⬡',name:'Experienced',       desc:'Reach level 10',                    reward:1000, test:s=>s.level>=10},
+  {id:'lv20',  icon:'⬡',name:'Veteran',           desc:'Reach level 20',                    reward:5000, test:s=>s.level>=20},
+  {id:'lv40',  icon:'⬡',name:'Elder Gardener',    desc:'Reach level 40',                    reward:30000,test:s=>s.level>=40},
+  {id:'rare1', icon:'◇',name:'First Rarity',      desc:'Plant a rare tree',                 reward:250,  test:s=>(s.pr.rare||0)>=1},
+  {id:'epic1', icon:'◇',name:'Epic Garden',       desc:'Plant an epic tree',                reward:1200, test:s=>(s.pr.epic||0)>=1},
+  {id:'leg1',  icon:'◇',name:'Legendary',         desc:'Plant a legendary tree',            reward:6000, test:s=>(s.pr.legend||0)>=1},
+  {id:'myth1', icon:'◇',name:'Mythic',            desc:'Plant a mythic tree',               reward:30000,test:s=>(s.pr.mythic||0)>=1},
+  {id:'zone2', icon:'🌳',name:'Orchard Owner',     desc:'Unlock the Orchard',               reward:400,  test:s=>s.zones.includes('orchard')},
+  {id:'zone3', icon:'🌲',name:'Grove Keeper',      desc:'Unlock the Grove',                 reward:1500, test:s=>s.zones.includes('grove')},
+  {id:'zone4', icon:'⛰️',name:'Highlander',        desc:'Unlock the Highlands',             reward:6000, test:s=>s.zones.includes('highlands')},
+  {id:'zone5', icon:'🪟',name:'Greenhouse Owner',  desc:'Unlock the Greenhouse',            reward:18000,test:s=>s.zones.includes('greenhouse')},
+  {id:'zone6', icon:'✨',name:'Enchanted',         desc:'Unlock the Enchanted Woods',       reward:60000,test:s=>s.zones.includes('enchanted')},
+  {id:'craft1',icon:'⚗️',name:'Alchemist',         desc:'Craft your first fertilizer bag',  reward:200,  test:s=>s.totalCrafts>=1},
+  {id:'craft10',icon:'⚗️',name:'Master Alchemist', desc:'Craft 10 fertilizer bags',         reward:2000, test:s=>s.totalCrafts>=10},
+  {id:'drop10',icon:'💎',name:'Collector',         desc:'Collect 10 different materials',   reward:1000, test:s=>Object.keys(s.inv).length>=10},
+  {id:'market10',icon:'🏪',name:'Market Regular',  desc:'Use the market 10 times',          reward:1500, test:s=>s.marketUses>=10},
+  {id:'pres1', icon:'🔄',name:'Rebirth',           desc:'Prestige for the first time',      reward:0,    test:s=>s.prestCount>=1},
+  {id:'pres5', icon:'🔄',name:'Reborn',            desc:'Prestige 5 times',                 reward:0,    test:s=>s.prestCount>=5},
+  {id:'allz',  icon:'🗺️',name:'Full Map',          desc:'Unlock all 6 zones',               reward:15000,test:s=>s.zones.length>=6},
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+const mkS = () => ({
+  coins:150, tc:0, th:0,
+  level:1, xp:0,
+  pr:{common:0,rare:0,epic:0,legend:0,mythic:0},
+  plots:[...Array.from({length:6},(_,i)=>({id:i,zone:'meadow',tree:null,at:null}))],
+  zones:['meadow'],
+  upgrades:{}, workshop:{}, ach:{},
+  inv:{},          // material inventory: {materialId: count}
+  totalCrafts:0,
+  equippedBagId:null,  bagInventory:{},
+  sel:null, sfx:true,
+  prestCount:0, prestBonus:1.0,
+  effects:{},
+  marketUses:0, marketRefresh:0, marketItems:[],
+  passiveTick:Date.now(),
+  seasonIdx:0, seasonStart:Date.now(),
+  permValBonus:0,   // permanent value bonus from scrolls etc.
+});
+let S = mkS();
+
+// ── XP ──
+function xpFor(lv){ return Math.floor(50*Math.pow(lv,1.55)); }
+function addXP(n){
+  S.xp+=n; let leveled=false;
+  while(S.xp>=xpFor(S.level)){ S.xp-=xpFor(S.level); S.level++; leveled=true; onLevelUp(S.level); }
+  if(leveled) renderAll();
+}
+function onLevelUp(lv){
+  toast(`Level ${lv}! ✦`);
+  document.getElementById('header').classList.add('lvlup-flash');
+  setTimeout(()=>document.getElementById('header').classList.remove('lvlup-flash'),700);
+  ZONES.forEach(z=>{
+    if(z.unlockLv===lv && !S.zones.includes(z.id)){
+      S.zones.push(z.id);
+      for(let i=0;i<z.plots;i++) S.plots.push({id:S.plots.length,zone:z.id,tree:null,at:null});
+      toast(`${z.icon} ${z.name} unlocked!`);
+    }
+  });
+}
+
+// ── Save / Load ──
+function saveGame(){ try{localStorage.setItem('cg_v9',JSON.stringify(S));}catch(e){} }
+function loadGame(){
+  // Clear ALL old version saves that might interfere
+  ['cg_v1','cg_v2','cg_v3','cg_v4','cg_v5','cg_v6','cg_v8'].forEach(k=>localStorage.removeItem(k));
+  try{
+    const r=localStorage.getItem('cg_v9');
+    if(r){
+      const d=JSON.parse(r);
+      // Safety check: if save is corrupt (no coins field or negative), start fresh
+      if(typeof d.coins !== 'number' || d.coins < 0) { localStorage.removeItem('cg_v9'); return; }
+      S={...mkS(),...d};
+      // Remove legacy fields that no longer exist
+      delete S.activeBags;
+      // Ensure arrays/objects are correct types
+      if(!Array.isArray(S.plots)) S.plots=mkS().plots;
+      if(typeof S.upgrades!=='object'||Array.isArray(S.upgrades)) S.upgrades={};
+      if(typeof S.inv!=='object'||Array.isArray(S.inv)) S.inv={};
+      if(typeof S.bagInventory!=='object'||Array.isArray(S.bagInventory)) S.bagInventory={};
+      if(typeof S.effects!=='object'||Array.isArray(S.effects)) S.effects={};
+      if(!Array.isArray(S.zones)) S.zones=['meadow'];
+      // Ensure coins is always a valid number
+      if(!S.coins || isNaN(S.coins)) S.coins = 100;
+    }
+  }catch(e){ localStorage.removeItem('cg_v9'); }
+}
+
+// ═══════════════════════════════════════════════════════
+// FORMULAS
+// ═══════════════════════════════════════════════════════
+const ulvl = id => S.upgrades[id]||0;
+const ucost = u  => Math.floor(u.base * Math.pow(u.mult, ulvl(u.id)));
+const hasW  = id => !!S.workshop[id];
+
+function isReqOk(req){
+  if(!req) return true;
+  const i = req.lastIndexOf(':');
+  const k = req.substring(0,i), v = req.substring(i+1);
+  if(k==='zone')  return S.zones.includes(v);
+  if(k==='level') return S.level >= parseInt(v);
+  return ulvl(k) >= parseInt(v);
+}
+
+function equippedBagData(){
+  if(!S.equippedBagId) return null;
+  return RECIPES.find(r=>r.id===S.equippedBagId)||null;
+}
+function equipBag(id){
+  if(S.equippedBagId===id){
+    // unequip — put charges back as fractional bag? No, just lose them. Confirm.
+    if(!confirm('Unequip? Remaining charges will be lost.')) return;
+    S.equippedBagId=null; S.equippedCharges=0;
+    toast('Fertilizer unequipped');
+  } else {
+    if((S.bagInventory[id]||0)<=0){ toast('No bags of this type'); return; }
+    // unequip previous
+    if(S.equippedBagId) { S.equippedBagId=null; S.equippedCharges=0; }
+    S.bagInventory[id]--;
+    if(S.bagInventory[id]<=0) delete S.bagInventory[id];
+    const r=RECIPES.find(r=>r.id===id);
+    S.equippedBagId=id; S.equippedCharges=r.charges||10;
+    toast(`${r.icon} ${r.name} equipped · ${r.charges} charges`);
+  }
+  renderFertSlot(); renderCrafting(); renderStats();
+  saveGame();
+}
+function consumeBagCharge(){
+  if(!S.equippedBagId) return;
+  S.equippedCharges--;
+  if(S.equippedCharges<=0){
+    const r=RECIPES.find(r=>r.id===S.equippedBagId);
+    S.equippedBagId=null; S.equippedCharges=0;
+    toast(`${r?r.icon:''} Fertilizer used up — craft more!`);
+    renderFertSlot(); renderCrafting();
+  }
+}
+function growMult(){
+  let m=1;
+  UPGRADES.filter(u=>u.effect==='growSpeed').forEach(u=>{ m*=(1-ulvl(u.id)*(u.id==='fert1'?.12:u.id==='fert2'?.10:.08)); });
+  if(hasW('well'))      m*=.90;
+  if(hasW('timepiece')) m*=.80;
+  const s=SEASONS[S.seasonIdx];
+  if(!(hasW('greenhouse_u')&&s.id==='winter')) m*=s.growMod;
+  if(S.effects.speed_time && S.effects.speed_time>Date.now()) m*=.5;
+  // equipped bag
+  const _eb=equippedBagData();
+  if(_eb){
+    if(_eb.effect==='grow')    m*=(1-(_eb.val.pct||0));
+    if(_eb.effect==='both')    m*=(1-(_eb.val.gpct||0));
+    if(_eb.effect==='instant') m=0.001;
+  }
+  return Math.max(.05,m);
+}
+function valMult(tree){
+  let m=1;
+  UPGRADES.filter(u=>u.effect==='fruitValue').forEach(u=>{ m*=(1+ulvl(u.id)*(u.id==='qual1'?.18:u.id==='qual2'?.15:.12)); });
+  m*=SEASONS[S.seasonIdx].valMod;
+  m*=S.prestBonus;
+  m*=(1+S.permValBonus);
+  if(hasW('golden_soil')&&(tree.rarity==='legend'||tree.rarity==='mythic')) m*=1.25;
+  if(hasW('philosopher')&&tree.rarity==='mythic') m*=2;
+  if(S.effects.x2_time&&S.effects.x2_time>Date.now()) m*=2;
+  if(S.effects.x5_coins&&S.effects.x5_coins>Date.now()) m*=5;
+  if(S.effects.moon&&isNight()) m*=3;
+  // equipped bag value bonuses
+  const _eb2=equippedBagData();
+  if(_eb2){
+    if(_eb2.effect==='val')   m*=(1+(_eb2.val.pct||0));
+    if(_eb2.effect==='val_x') m*=(_eb2.val.x||1);
+    if(_eb2.effect==='both')  m*=(1+(_eb2.val.vpct||0));
+  }
+  // market use-based effects
+  if(S.effects.val_uses && S.effects.val_uses.uses>0) m*=(1+(S.effects.val_uses.pct||0));
+  if(S.effects.xN_next  && S.effects.xN_next.uses>0)  m*=(S.effects.xN_next.x||1);
+  return m;
+}
+function effectGrow(tree){ return Math.max(3,Math.floor(tree.grow*growMult())); }
+function effectVal(tree){ return Math.floor(tree.val*valMult(tree)); }
+function dblChance(){
+  let ch=ulvl('rain')*.20+(S.effects.rain_time&&S.effects.rain_time>Date.now()?.50:0);
+  const _eb=equippedBagData(); if(_eb&&_eb.effect==='dbl') ch+=(_eb.val.bonus||0);
+  return Math.min(.9,ch);
+}
+function passIncome(){
+  let base=ulvl('bees')*(hasW('beehive2')?3:1);
+  const _eb=equippedBagData(); if(_eb&&_eb.effect==='passive') base+=(_eb.val.bonus||0);
+  if(S.effects.bee_time&&S.effects.bee_time.until>Date.now()) base+=S.effects.bee_time.bonus;
+  return base;
+}
+function hasAutoH(){ return ulvl('auto1')>0; }
+function hasAutoP(){ return ulvl('auto2')>0; }
+function hasSmart(){ return ulvl('auto3')>0; }
+function isNight(){ const h=new Date().getHours(); return h>=21||h<=5; }
+function maxStack(){ return hasW('inv_expand')?200:100; }
+
+function plotProg(p){
+  if(!p.tree||!p.at) return 0;
+  const tree=TREES.find(t=>t.id===p.tree); if(!tree) return 0;
+  // instant effect from equipped bag
+  const _eb=equippedBagData();
+  if(_eb && _eb.effect==='instant') return 1;
+  return Math.min(1,(Date.now()-p.at)/(effectGrow(tree)*1000));
+}
+function plotEmoji(p){
+  const tree=TREES.find(t=>t.id===p.tree); if(!tree) return '🌱';
+  const i=(g=>g>=1?3:Math.floor(g*3))(plotProg(p));
+  return tree.stages[i];
+}
+function stageName(g){ if(g<.33)return'Seed';if(g<.66)return'Sprout';if(g<1)return'Growing';return'Ready'; }
+function ppm(){
+  let v=0;
+  S.plots.forEach(p=>{ if(!p.tree)return; const t=TREES.find(t=>t.id===p.tree); if(t)v+=(effectVal(t)/effectGrow(t))*60; });
+  return Math.floor(v);
+}
+function bestSeed(){
+  return TREES.filter(t=>S.coins>=t.cost&&S.zones.includes(t.zone))
+    .sort((a,b)=>effectVal(b)/effectGrow(b)-effectVal(a)/effectGrow(a))[0];
+}
+
+// Drop roll
+function rollDrops(tree){
+  const drops={};
+  const mult=hasW('drop_boost')?2:1;
+  // guaranteed drop check
+  const guar=S.effects.drop_guarantee && S.effects.drop_guarantee.uses>0 ? S.effects.drop_guarantee : null;
+  tree.drops.forEach(mid=>{
+    const mat=MATERIALS[mid]; if(!mat) return;
+    const chance=Math.min(.95,mat.dropChance*mult*(guar?10:1));
+    if(Math.random()<chance){ drops[mid]=(drops[mid]||0)+1; }
+  });
+  if(guar){ guar.uses--; if(guar.uses<=0) delete S.effects.drop_guarantee; }
+  return drops;
+}
+function addToInv(drops){
+  const max=maxStack();
+  Object.entries(drops).forEach(([mid,n])=>{
+    S.inv[mid]=Math.min(max,(S.inv[mid]||0)+n);
+    const mat=MATERIALS[mid];
+    floatNum2(`+${mat.icon}`);
+  });
+}
+
+// Market
+function refreshMarket(force){
+  if(!force&&S.marketItems.length>0&&Date.now()-S.marketRefresh<180000) return;
+  const pool=[...MARKET_POOL].sort(()=>Math.random()-.5).slice(0,5);
+  // discount 1 item
+  pool[Math.floor(Math.random()*pool.length)]._disc=.75;
+  S.marketItems=pool; S.marketRefresh=Date.now();
+}
+
+// Bag consumption helper
+function consumeBagUses(effect){
+  // activeBags removed — no-op
+}
+
+// Season
+function tickSeason(){
+  const s=SEASONS[S.seasonIdx];
+  if(Date.now()-S.seasonStart>=s.dur*1000){
+    S.seasonIdx=(S.seasonIdx+1)%SEASONS.length;
+    S.seasonStart=Date.now();
+    toast(`${SEASONS[S.seasonIdx].icon} ${SEASONS[S.seasonIdx].name} has arrived`);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+function fmt(n){
+  if(n>=1e9)return(n/1e9).toFixed(2)+'B';
+  if(n>=1e6)return(n/1e6).toFixed(2)+'M';
+  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
+  return Math.floor(n).toLocaleString('en');
+}
+function renderHeader(){
+  document.getElementById('hcoins').textContent=fmt(Math.floor(S.coins));
+  const r=ppm();
+  document.getElementById('ppm-tag').textContent=r>0?` +${fmt(r)}/m`:'';
+  document.getElementById('hlvl').textContent=S.level;
+  const need=xpFor(S.level);
+  document.getElementById('hxpfill').style.width=Math.floor(S.xp/need*100)+'%';
+  document.getElementById('hxplbl').textContent=`${fmt(S.xp)}/${fmt(need)}`;
+  document.getElementById('hprestige').textContent=`×${S.prestBonus.toFixed(1)}`;
+  document.getElementById('sfx-btn').textContent=S.sfx?'SFX ▸':'SFX ✕';
+}
+function renderStats(){
+  const effects=[];
+  if(S.effects.x2_time&&S.effects.x2_time>Date.now()) effects.push(`×2 coins ${Math.ceil((S.effects.x2_time-Date.now())/1000)}s`);
+  if(S.effects.speed_time&&S.effects.speed_time>Date.now()) effects.push(`⚡speed ${Math.ceil((S.effects.speed_time-Date.now())/1000)}s`);
+  if(S.effects.x5_coins&&S.effects.x5_coins>Date.now()) effects.push(`×5 coins ${Math.ceil((S.effects.x5_coins-Date.now())/1000)}s`);
+  if(S.effects.moon) effects.push(isNight()?'🌙 active':'🌙 (night only)');
+  // equipped bag effect label
+  const _ebd=equippedBagData();
+  if(_ebd){ const cnt=S.bagInventory[S.equippedBagId]||0; effects.push(`${_ebd.icon} ${_ebd.name.split(' ')[0]} ×${cnt}`); }
+  document.getElementById('stats-row').innerHTML=
+    `<div class="stat-pill">Harvests: ${fmt(S.th)}</div>`+
+    `<div class="stat-pill">Earned: ${fmt(S.tc)}</div>`+
+    `<div class="stat-pill">${fmt(ppm())}/min</div>`+
+    `<div class="stat-pill">Lv.${S.level}</div>`+
+    (S.prestCount>0?`<div class="stat-pill hi">Legacy ×${S.prestBonus.toFixed(1)}</div>`:'')+
+    effects.map(e=>`<div class="stat-pill red">${e}</div>`).join('');
+}
+function renderSeason(){
+  const s=SEASONS[S.seasonIdx];
+  const p=Math.min(1,(Date.now()-S.seasonStart)/(s.dur*1000));
+  const rem=Math.ceil(s.dur-(Date.now()-S.seasonStart)/1000);
+  document.getElementById('season-bar').innerHTML=
+    `<div class="sicon">${s.icon}</div><div class="sinfo"><div class="sname">${s.name}</div><div class="seffect">${s.effect} · ${rem}s</div></div><div class="sprogress"><div class="sfill" style="width:${Math.floor(p*100)}%;background:${s.color}"></div></div>`;
+}
+function renderInvBar(){
+  const items=Object.entries(S.inv).filter(([,n])=>n>0).slice(0,12);
+  if(!items.length){ document.getElementById('inv-bar').innerHTML=''; return; }
+  document.getElementById('inv-bar').innerHTML=
+    items.map(([id,n])=>{ const m=MATERIALS[id]; return `<div class="inv-chip" title="${m.name}">${m.icon} ${n}</div>`; }).join('');
+}
+function renderFertSlot(){
+  const el=document.getElementById('fert-slot-bar');
+  if(!el) return;
+  const eq=S.equippedBagId;
+  const eqR=eq?RECIPES.find(r=>r.id===eq):null;
+  let html='';
+  if(eqR){
+    const maxC=eqR.charges||10;
+    const pct=Math.round((S.equippedCharges/maxC)*100);
+    // Circular progress via conic-gradient
+    html+=`<div class="fert-slot active" onclick="equipBag('${eqR.id}')" title="Click to unequip">
+      <div class="fert-slot-icon">${eqR.icon}</div>
+      <div class="fert-counter">${S.equippedCharges}</div>
+      <svg style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;pointer-events:none" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="19" fill="none" stroke="var(--b2)" stroke-width="2.5"/>
+        <circle cx="22" cy="22" r="19" fill="none" stroke="var(--green)" stroke-width="2.5"
+          stroke-dasharray="${Math.round(119.4*pct/100)} 119.4"
+          stroke-linecap="round" transform="rotate(-90 22 22)"/>
+      </svg>
+    </div>`;
+    html+=`<div class="fert-slot-info">
+      <div class="fname">${eqR.icon} ${eqR.name}</div>
+      <div class="fdesc">${eqR.desc}</div>
+      <div class="fdesc" style="color:var(--green);margin-top:2px">${S.equippedCharges} / ${maxC} charges remaining</div>
+    </div>
+    <button class="fert-unequip" onclick="equipBag('${eqR.id}')">Unequip</button>`;
+  } else {
+    const hasBags=Object.values(S.bagInventory).some(n=>n>0);
+    html+=`<div class="fert-slot empty-slot" onclick="document.querySelector('[data-tab=crafting]').click()" title="Open Crafting">
+      <div style="font-size:.9rem;color:var(--t3)">⊘</div>
+    </div>`;
+    html+=`<div class="fert-slot-info">
+      <div class="fname" style="color:var(--t3)">No fertilizer equipped</div>
+      <div class="fdesc">${hasBags?'You have bags — go to Crafting tab to equip':'Harvest trees to collect materials, then craft bags'}</div>
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+function renderActiveSeed(){
+  const bar=document.getElementById('active-seed');
+  if(S.sel){ const t=TREES.find(t=>t.id===S.sel); bar.style.display='flex'; document.getElementById('active-label').textContent=`${t.stages[3]} ${t.name} · ${fmt(t.cost)} coins`; }
+  else bar.style.display='none';
+}
+function renderZones(){
+  let html='';
+  ZONES.forEach(zone=>{
+    const on=S.zones.includes(zone.id);
+    const plots=S.plots.filter(p=>p.zone===zone.id);
+    html+=`<div class="zone-hdr"><span class="zone-title">${zone.icon} ${zone.name}</span><span class="zone-info ${on?'on':''}">${on?`${plots.filter(p=>p.tree).length}/${plots.length} planted`:`Unlocks level ${zone.unlockLv}`}</span></div>`;
+    if(on){
+      html+=`<div class="garden-grid">`;
+      plots.forEach(p=>{
+        const gi=S.plots.indexOf(p);
+        if(!p.tree){
+          html+=`<div class="plot empty" onclick="clickPlot(${gi})"><div class="picon">🟫</div><div class="pname">${S.sel?'Plant here':'Empty'}</div><div class="pstate">—</div><div class="pbar-wrap"><div class="pbar" style="width:0"></div></div></div>`;
+        } else {
+          const tree=TREES.find(t=>t.id===p.tree);
+          const g=plotProg(p);const rdy=g>=1;
+          html+=`<div class="plot" id="plot-${gi}" onclick="clickPlot(${gi})">
+            ${hasAutoH()&&rdy?'<div class="abadge">Auto</div>':''}
+            <div class="picon">${plotEmoji(p)}</div>
+            <div class="pname">${tree.name}</div>
+            <div class="pstate">${stageName(g)}</div>
+            <div class="pbar-wrap"><div class="pbar" id="pb-${gi}" style="width:${Math.floor(g*100)}%"></div></div>
+            ${rdy?`<button class="hvbtn" onclick="event.stopPropagation();doHarvest(${gi})">Harvest +${fmt(effectVal(tree))}</button>`:''}
+          </div>`;
+        }
+      });
+      html+=`</div>`;
+    }
+  });
+  document.getElementById('zones').innerHTML=html;
+}
+function renderSeeds(){
+  let html='';
+  RARITY_GROUPS.forEach(grp=>{
+    const group=TREES.filter(t=>t.rarity===grp.id);
+    if(!group.length) return;
+    html+=`<div class="cat-hdr">${grp.label}</div>`;
+    group.forEach(t=>{
+      const afford=S.coins>=t.cost;
+      const zok=S.zones.includes(t.zone);
+      const sel=S.sel===t.id;
+      const rd={common:'rc',rare:'rr',epic:'re',legend:'rl',mythic:'rm'}[t.rarity];
+      const cls=`seed-row${!afford&&zok?' cant-afford':''}${!zok?' locked-row':''}${sel?' selected':''}`;
+      const eg=effectGrow(t); const ev=effectVal(t);
+      const sub=zok?`${eg}s · +${fmt(ev)}`:`Unlock ${ZONES.find(z=>z.id===t.zone)?.name||''} (lv.${ZONES.find(z=>z.id===t.zone)?.unlockLv})`;
+      html+=`<div class="${cls}" onclick="${zok&&afford?`selectSeed('${t.id}')`:zok?`toast('Need ${fmt(t.cost-S.coins)} more coins')`:''}" >
+        <div class="sicon">${zok?t.stages[3]:'🔒'}</div>
+        <div class="smeta"><div class="sname"><div class="rdot ${rd}"></div>${t.name}</div><div class="ssub">${sub}</div></div>
+        ${zok?`<div class="sprice">${fmt(t.cost)}</div>`:''}
+      </div>`;
+    });
+  });
+  document.getElementById('sc-seeds').innerHTML=html;
+}
+function renderFarm(){
+  const cats=[...new Set(UPGRADES.map(u=>u.cat))];
+  let html='';
+  cats.forEach(cat=>{
+    html+=`<div class="cat-hdr">${cat}</div>`;
+    UPGRADES.filter(u=>u.cat===cat).forEach(u=>{
+      const lvl=ulvl(u.id);const maxed=lvl>=u.max;
+      const cost=ucost(u);const afford=S.coins>=cost;
+      const ok=isReqOk(u.req);
+      const pips=Array.from({length:u.max},(_,k)=>`<div class="pip${k<lvl?' on':''}"></div>`).join('');
+      html+=`<div class="card${ok?'':' locked-card'}">
+        <div class="card-icon">${u.icon}</div>
+        <div class="card-meta">
+          <div class="card-name">${u.name}</div>
+          <div class="card-desc">${ok?u.desc:`Requires: ${u.req}`}</div>
+          <div class="pips">${pips}</div>
+        </div>
+        <button class="card-btn" onclick="buyUpgrade('${u.id}')" ${maxed||!afford||!ok?'disabled':''}>
+          ${maxed?'Max':!ok?'🔒':fmt(cost)}
+        </button>
+      </div>`;
+    });
+  });
+  document.getElementById('sc-farm').innerHTML=html;
+}
+function renderWorkshop(){
+  let html='';
+  WORKSHOP.forEach(w=>{
+    const owned=hasW(w.id);const ok=isReqOk(w.req);const afford=S.coins>=w.cost;
+    html+=`<div class="card${ok?'':' locked-card'}">
+      <div class="card-icon">${w.icon}</div>
+      <div class="card-meta">
+        <div class="card-name">${w.name}</div>
+        <div class="card-desc">${w.desc}</div>
+        <div class="card-sub">${owned?'✓ Installed':ok?`${fmt(w.cost)} coins`:`Requires: ${w.req}`}</div>
+      </div>
+      <button class="card-btn${owned?' owned':''}" onclick="buyWorkshop('${w.id}')" ${owned||!afford||!ok?'disabled':''}>
+        ${owned?'✓':!ok?'🔒':'Buy'}
+      </button>
+    </div>`;
+  });
+  document.getElementById('sc-workshop').innerHTML=html;
+}
+function renderCrafting(){
+  const rarityOrder=['common','uncommon','rare','epic','legendary'];
+  let html='';
+  const invTip=`<div class="cat-hdr">Your materials</div>`;
+  const invHTML=Object.entries(S.inv).filter(([,n])=>n>0).map(([id,n])=>{ const m=MATERIALS[id]; return `<div class="inv-chip" title="${m.name}">${m.icon}${m.name.split(' ')[0]} ×${n}</div>`; }).join('');
+  html+=invTip+`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">${invHTML||'<span style="font-size:.62rem;color:var(--t3)">No materials yet — harvest trees to collect drops</span>'}</div>`;
+
+  rarityOrder.forEach(rar=>{
+    const group=RECIPES.filter(r=>r.rarity===rar);
+    if(!group.length) return;
+    html+=`<div class="cat-hdr">${rar.charAt(0).toUpperCase()+rar.slice(1)} bags</div>`;
+    group.forEach(r=>{
+      const canCraft=Object.entries(r.req).every(([mid,n])=>(S.inv[mid]||0)>=n);
+      const reqChips=Object.entries(r.req).map(([mid,n])=>{
+        const m=MATERIALS[mid];const has=(S.inv[mid]||0)>=n;
+        return `<div class="req-chip ${has?'has':'missing'}">${m.icon} ${m.name} ×${n} ${has?`(${S.inv[mid]||0})`:'('+( S.inv[mid]||0)+')'}</div>`;
+      }).join('');
+      html+=`<div class="craft-card">
+        <div class="craft-top">
+          <div class="craft-icon">${r.icon}</div>
+          <div class="craft-info">
+            <div class="craft-name">${r.name}</div>
+            <span class="craft-rarity cr-${r.rarity}">${r.rarity}</span>
+            <span style="font-size:.57rem;color:var(--t3);margin-left:4px">${r.charges} charges</span>
+          </div>
+        </div>
+        <div class="card-desc" style="font-size:.62rem;color:var(--t3);margin-bottom:6px">${r.desc}</div>
+        <div class="craft-reqs">${reqChips}</div>
+        <div style="display:flex;gap:5px;margin-top:2px">
+          <button class="craft-btn" style="flex:1" onclick="doCraft('${r.id}')" ${canCraft?'':'disabled'}>${canCraft?'✦ Craft':'Missing materials'}</button>
+          ${(S.bagInventory[r.id]||0)>0?`<button class="craft-btn" style="flex:none;border-color:${S.equippedBagId===r.id?'var(--green2)':'var(--b2)'};color:${S.equippedBagId===r.id?'var(--green)':'var(--t2)'}" onclick="equipBag('${r.id}')">${S.equippedBagId===r.id?'✓ Equipped':'Equip ×'+S.bagInventory[r.id]}</button>`:''  }
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('sc-crafting').innerHTML=html;
+}
+function renderMarket(){
+  refreshMarket(false);
+  const secs=Math.max(0,Math.ceil((180000-(Date.now()-S.marketRefresh))/1000));
+  let html=`<div class="market-timer">Market refreshes in ${secs}s · <button style="background:none;border:1px solid var(--b2);color:var(--t3);border-radius:var(--rsm);padding:2px 7px;font-size:.6rem;cursor:pointer" onclick="refreshMarket(true);renderMarket()">Refresh now (free)</button></div>`;
+  S.marketItems.forEach((item,i)=>{
+    const cost=Math.floor(item.cost*(item._disc||1));
+    const afford=S.coins>=cost;
+    html+=`<div class="market-card">
+      <div class="mc-icon">${item.icon}</div>
+      <div class="mc-meta"><div class="mc-name">${item.name}</div><div class="mc-desc">${item.desc}</div></div>
+      <div class="mc-price">
+        ${item._disc?`<span class="old">${fmt(item.cost)}</span><span class="drop">−25%</span>`:''}
+        ${fmt(cost)}
+      </div>
+      <button class="card-btn gold-btn" onclick="buyMarket(${i})" ${afford?'':'disabled'}>${afford?'Buy':'💸'}</button>
+    </div>`;
+  });
+  document.getElementById('sc-market').innerHTML=html;
+}
+function renderPrestige(){
+  const thresh=Math.floor(5000*Math.pow(4,S.prestCount));
+  const can=S.tc>=thresh;
+  const next=+(S.prestBonus+.2).toFixed(1);
+  document.getElementById('sc-prestige').innerHTML=`
+    <div class="prestige-box">
+      <div class="prestige-title">Garden Legacy</div>
+      <div class="prestige-desc">Prestige resets your garden but grants a permanent coin multiplier. Achievements and total harvests are kept.</div>
+      <div class="pstat">Prestige count: <strong>${S.prestCount}</strong></div>
+      <div class="pstat">Current multiplier: <strong>×${S.prestBonus.toFixed(1)}</strong></div>
+      <div class="pstat">After prestige: <strong>×${next}</strong></div>
+      <div class="pstat">Required earned: <strong>${fmt(thresh)} coins</strong></div>
+      <div class="pstat">Your total: <strong>${fmt(S.tc)} coins</strong></div>
+      <button class="prestige-btn" onclick="doPrestige()" ${can?'':'disabled'}>${can?'✦ Prestige & Multiply':`Earn ${fmt(thresh-S.tc)} more`}</button>
+    </div>
+    <div style="font-size:.64rem;color:var(--t3);line-height:1.75;padding:4px 0">
+      <strong style="color:var(--t2)">Kept:</strong> achievements, harvest count, prestige multiplier<br>
+      <strong style="color:var(--t2)">Reset:</strong> coins, level, zones, plots, upgrades, workshop, inventory
+    </div>`;
+}
+function renderGoals(){
+  const done=ACHIEVEMENTS.filter(a=>S.ach[a.id]).length;
+  let html=`<div class="cat-hdr">${done}/${ACHIEVEMENTS.length} unlocked</div>`;
+  ACHIEVEMENTS.forEach(a=>{
+    const isDone=S.ach[a.id];
+    html+=`<div class="ach-row ${isDone?'done':'todo'}">
+      <div class="aicon">${a.icon}</div>
+      <div><div class="aname">${a.name}</div><div class="adesc">${a.desc}</div>${a.reward?`<div class="areward">Reward: +${fmt(a.reward)} coins</div>`:''}</div>
+    </div>`;
+  });
+  document.getElementById('sc-goals').innerHTML=html;
+}
+function renderAll(){
+  renderHeader(); renderStats(); renderSeason(); renderInvBar();
+  renderFertSlot(); renderActiveSeed(); renderZones(); renderSeeds(); renderFarm();
+  renderWorkshop(); renderCrafting(); renderMarket(); renderPrestige(); renderGoals();
+}
+
+// ═══════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════
+function selectSeed(id){
+  const t=TREES.find(t=>t.id===id);
+  S.coins=+S.coins;
+  if(S.coins<t.cost){ toast(`Not enough coins (have ${fmt(S.coins)}, need ${fmt(t.cost)})`); return; }
+  S.sel=S.sel===id?null:id;
+  renderSeeds(); renderActiveSeed(); renderZones();
+}
+function clickPlot(idx){
+  const p=S.plots[idx];
+  if(p.tree){ if(plotProg(p)>=1) doHarvest(idx); return; }
+  if(!S.sel){ toast('Select a seed first'); return; }
+  doPlant(idx,S.sel);
+}
+function doPlant(idx,tid){
+  const t=TREES.find(t=>t.id===tid);
+  S.coins=+S.coins; // ensure number
+  if(!t||S.coins<t.cost){ toast(`Not enough coins (have ${fmt(S.coins)}, need ${fmt(t.cost)})`); return; }
+  if(!S.zones.includes(t.zone)){ toast('Zone not unlocked'); return; }
+  S.coins-=t.cost;
+  S.plots[idx]={...S.plots[idx],tree:tid,at:Date.now()};
+  S.pr[t.rarity]=(S.pr[t.rarity]||0)+1;
+  beep('plant');
+  renderZones(); renderSeeds(); renderHeader();
+  setTimeout(()=>{ const el=document.getElementById(`plot-${idx}`); if(el){el.classList.add('just-grew');setTimeout(()=>el.classList.remove('just-grew'),450);} },30);
+}
+function doHarvest(idx){
+  const p=S.plots[idx]; if(!p.tree) return;
+  if(plotProg(p)<1) return;
+  const tree=TREES.find(t=>t.id===p.tree);
+  let val=effectVal(tree);
+  // double harvest
+  if(Math.random()<dblChance()){ val*=2; toast('Double harvest! 🎉'); }
+  // autumn bonus
+  if(SEASONS[S.seasonIdx].id==='autumn'&&Math.random()<.12){ const b=Math.floor(val*.4); val+=b; toast(`🍂 Autumn bonus +${fmt(b)}`); }
+  // consume equipped bag charge
+  consumeBagCharge();
+  // consume market use-based effects
+  if(S.effects.val_uses && S.effects.val_uses.uses>0){ S.effects.val_uses.uses--; if(S.effects.val_uses.uses<=0) delete S.effects.val_uses; }
+  if(S.effects.xN_next  && S.effects.xN_next.uses>0){  S.effects.xN_next.uses--;  if(S.effects.xN_next.uses<=0)  delete S.effects.xN_next;  }
+  S.coins+=val; S.tc+=val; S.th++;
+  addXP(tree.xp);
+  // material drops
+  const drops=rollDrops(tree);
+  if(Object.keys(drops).length>0) addToInv(drops);
+  // visual
+  const el=document.getElementById(`plot-${idx}`);
+  if(el){ el.classList.add('harvesting'); setTimeout(()=>el.classList.remove('harvesting'),350); const r=el.getBoundingClientRect(); floatNum(r.left+r.width/2,r.top+window.scrollY,`+${fmt(val)}`); }
+  beep('harvest');
+  S.plots[idx]={...S.plots[idx],tree:null,at:null};
+  // auto replant
+  if(hasAutoP()||hasSmart()){
+    const seed=hasSmart()?bestSeed():(S.sel?TREES.find(t=>t.id===S.sel):null);
+    if(seed&&S.coins>=seed.cost) setTimeout(()=>doPlant(idx,seed.id),180);
+  }
+  checkAchievements();
+  renderZones(); renderHeader(); renderStats(); renderSeeds(); renderInvBar();
+  // lazy update crafting if open
+  if(document.getElementById('tab-crafting').classList.contains('active')) renderCrafting();
+}
+function buyUpgrade(id){
+  const u=UPGRADES.find(u=>u.id===id);
+  if(!u) return;
+  if(!isReqOk(u.req)){ toast('Requirement not met'); return; }
+  const lvl=ulvl(id); if(lvl>=u.max) return;
+  const cost=ucost(u);
+  if(S.coins<cost){ toast(`Need ${fmt(cost-S.coins)} more coins`); return; }
+  S.coins-=cost; S.upgrades[id]=lvl+1;
+  if(u.effect==='addPlots'){
+    const zone=u.zone;
+    for(let k=0;k<u.val||2;k++) S.plots.push({id:S.plots.length,zone,tree:null,at:null});
+  }
+  toast(`${u.name} — level ${lvl+1}`);
+  beep('upgrade'); renderAll(); checkAchievements();
+}
+function buyWorkshop(id){
+  const w=WORKSHOP.find(w=>w.id===id);
+  if(!w||hasW(id)) return;
+  if(!isReqOk(w.req)){ toast('Requirement not met'); return; }
+  if(S.coins<w.cost){ toast(`Need ${fmt(w.cost-S.coins)} more coins`); return; }
+  S.coins-=w.cost; S.workshop[id]=true;
+  toast(`${w.icon} ${w.name} installed!`);
+  beep('upgrade'); renderAll(); checkAchievements();
+}
+function buyMarket(i){
+  refreshMarket(false);
+  const item=S.marketItems[i]; if(!item) return;
+  const cost=Math.floor(item.cost*(item._disc||1));
+  if(S.coins<cost){ toast(`Need ${fmt(cost-S.coins)} more coins`); return; }
+  S.coins-=cost; S.marketUses++;
+  applyMarket(item);
+  S.marketItems.splice(i,1);
+  beep('upgrade'); renderAll(); checkAchievements();
+}
+function applyMarket(item){
+  const {effect,val}=item;
+  switch(effect){
+    case 'val_uses':      S.effects.val_uses={pct:val.pct,uses:val.uses}; toast(`Value +${val.pct*100|0}% for next ${val.uses} harvests`); break;
+    case 'instant_n':     {let d=0;S.plots.forEach(p=>{if(p.tree&&plotProg(p)<1&&d<val.n){p.at=Date.now()-effectGrow(TREES.find(t=>t.id===p.tree))*1000;d++;}});toast(`${val.n} trees instantly grown`);} break;
+    case 'xp':            addXP(val); toast(`+${val} XP`); break;
+    case 'x2_time':       S.effects.x2_time=Date.now()+val.dur*1000; toast(`×2 coins for ${val.dur}s`); break;
+    case 'xN_next':       S.effects.xN_next={x:val.x,uses:val.uses}; toast(`Next harvest ×${val.x}!`); break;
+    case 'speed_time':    S.effects.speed_time=Date.now()+val.dur*1000; toast(`⚡ Speed ×2 for ${val.dur}s`); break;
+    case 'moon':          S.effects.moon=true; toast('🌙 Moon boost active (21h-6h)'); break;
+    case 'rain_time':     S.effects.rain_time=Date.now()+val.dur*1000; toast(`🌧️ +50% double chance for ${val.dur}s`); break;
+    case 'mystery':       {const rt=TREES.filter(t=>t.rarity==='rare'&&S.zones.includes(t.zone));if(!rt.length){S.coins+=300;renderHeader();break;}const seed=rt[Math.floor(Math.random()*rt.length)];const emp=S.plots.find(p=>!p.tree&&S.zones.includes(p.zone));if(emp)doPlant(S.plots.indexOf(emp),seed.id);else{S.coins+=seed.cost;renderHeader();}toast(`Mystery: ${seed.name}`);} break;
+    case 'harvest_all':   {let n=0;S.plots.forEach((_,i)=>{if(S.plots[i].tree&&plotProg(S.plots[i])>=1){doHarvest(i);n++;}});toast(`Auto-harvested ${n} trees`);} break;
+    case 'mat_chest':     {const mids=Object.keys(MATERIALS);const drops={};for(let k=0;k<val;k++){const mid=mids[Math.floor(Math.random()*mids.length)];drops[mid]=(drops[mid]||0)+1;}addToInv(drops);toast(`+${val} random materials!`);renderInvBar();} break;
+    case 'val_perm':      S.permValBonus=(S.permValBonus||0)+val.pct; toast('+2.5% permanent value'); break;
+    case 'coins':         S.coins+=val; renderHeader(); toast(`+${fmt(val)} coins`); break;
+    case 'bee_time':      S.effects.bee_time={until:Date.now()+val.dur*1000,bonus:val.bonus}; toast(`🐝 +${val.bonus} income for ${val.dur}s`); break;
+    case 'drop_guarantee':S.effects.drop_guarantee={uses:val.uses}; toast(`Guaranteed drops for next ${val.uses} harvests`); break;
+    case 'x5_coins':      S.effects.x5_coins=Date.now()+val.dur*1000; toast(`×5 coins for ${val.dur}s`); break;
+  }
+}
+function doCraft(id){
+  const r=RECIPES.find(r=>r.id===id); if(!r) return;
+  const canCraft=Object.entries(r.req).every(([mid,n])=>(S.inv[mid]||0)>=n);
+  if(!canCraft){ toast('Missing materials'); return; }
+  // consume materials
+  Object.entries(r.req).forEach(([mid,n])=>{ S.inv[mid]-=n; if(S.inv[mid]<=0) delete S.inv[mid]; });
+  // add to bag inventory (permanent — equip to use)
+  S.bagInventory[id]=(S.bagInventory[id]||0)+1;
+  toast(`${r.icon} ${r.name} crafted! Equip it in the garden.`);
+  S.totalCrafts++;
+  beep('upgrade');
+  renderAll(); checkAchievements();
+}
+function doPrestige(){
+  const thresh=Math.floor(5000*Math.pow(4,S.prestCount));
+  if(S.tc<thresh) return;
+  if(!confirm(`Prestige? Your garden resets. Multiplier goes to ×${(S.prestBonus+.2).toFixed(1)}.`)) return;
+  const keep={ach:{...S.ach},tc:S.tc,th:S.th,prestCount:S.prestCount+1,prestBonus:+(S.prestBonus+.2).toFixed(1)};
+  S={...mkS(),...keep,coins:200};
+  toast(`✦ Prestige ${S.prestCount}! Now ×${S.prestBonus.toFixed(1)}`);
+  renderAll(); checkAchievements();
+}
+function checkAchievements(){
+  let changed=false;
+  ACHIEVEMENTS.forEach(a=>{
+    if(!S.ach[a.id]&&a.test(S)){
+      S.ach[a.id]=true;
+      setTimeout(()=>{ toast(`🏆 ${a.name}`); if(a.reward>0){S.coins+=a.reward;renderHeader();} },150);
+      changed=true;
+    }
+  });
+  if(changed) renderGoals();
+}
+
+// ═══════════════════════════════════════════════════════
+// EFFECTS & SOUND
+// ═══════════════════════════════════════════════════════
+function floatNum(x,y,txt){const el=document.createElement('div');el.className='fnum';el.textContent=txt;el.style.left=x+'px';el.style.top=y+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),900);}
+function floatNum2(txt){
+  const el=document.createElement('div');el.className='fnum';el.textContent=txt;
+  el.style.left=(Math.random()*(window.innerWidth*.6)+window.innerWidth*.2)+'px';
+  el.style.top=(Math.random()*200+100)+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),2600);}
+let _ac=null;
+function beep(t){
+  if(!S.sfx)return;
+  try{
+    if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();
+    const o=_ac.createOscillator(),g=_ac.createGain();
+    o.connect(g);g.connect(_ac.destination);
+    if(t==='plant'){o.frequency.setValueAtTime(330,_ac.currentTime);o.frequency.setValueAtTime(440,_ac.currentTime+.07);g.gain.setValueAtTime(.06,_ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,_ac.currentTime+.17);o.start();o.stop(_ac.currentTime+.17);}
+    else if(t==='harvest'){o.frequency.setValueAtTime(523,_ac.currentTime);o.frequency.setValueAtTime(659,_ac.currentTime+.07);o.frequency.setValueAtTime(784,_ac.currentTime+.14);g.gain.setValueAtTime(.08,_ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,_ac.currentTime+.28);o.start();o.stop(_ac.currentTime+.28);}
+    else if(t==='upgrade'){o.frequency.setValueAtTime(660,_ac.currentTime);o.frequency.setValueAtTime(990,_ac.currentTime+.08);o.frequency.setValueAtTime(1320,_ac.currentTime+.17);g.gain.setValueAtTime(.07,_ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,_ac.currentTime+.38);o.start();o.stop(_ac.currentTime+.38);}
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════════════════
+// GAME LOOP
+// ═══════════════════════════════════════════════════════
+function loop(){
+  // update progress bars
+  S.plots.forEach((p,i)=>{
+    if(!p.tree) return;
+    const g=plotProg(p);
+    const pb=document.getElementById(`pb-${i}`);
+    if(pb) pb.style.width=Math.floor(g*100)+'%';
+    if(g>=1&&!document.querySelector(`#plot-${i} .hvbtn`)) renderZones();
+  });
+  // auto harvest
+  if(hasAutoH()) S.plots.forEach((_,i)=>{ if(S.plots[i].tree&&plotProg(S.plots[i])>=1) doHarvest(i); });
+  // passive income
+  const now=Date.now();const elapsed=(now-S.passiveTick)/1000;
+  if(elapsed>=1&&passIncome()>0){S.coins+=Math.floor(passIncome()*elapsed*S.prestBonus);S.tc+=Math.floor(passIncome()*elapsed*S.prestBonus);S.passiveTick=now;}
+  // season tick
+  tickSeason();
+  // (activeBags removed — bags are now permanent equipped items)
+  renderHeader(); renderStats(); renderSeason(); renderInvBar();
+  // market timer
+  if(document.getElementById('tab-market').classList.contains('active')){
+    const secs=Math.max(0,Math.ceil((180000-(Date.now()-S.marketRefresh))/1000));
+    const mRef=document.querySelector('.market-timer');
+    if(mRef) mRef.innerHTML=`Market refreshes in ${secs}s · <button style="background:none;border:1px solid var(--b2);color:var(--t3);border-radius:var(--rsm);padding:2px 7px;font-size:.6rem;cursor:pointer" onclick="refreshMarket(true);renderMarket()">Refresh now (free)</button>`;
+    if(secs<=0){refreshMarket(true);renderMarket();}
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// DRAWER
+// ═══════════════════════════════════════════════════════
+function toggleDrawer(){
+  const panel=document.getElementById('side-panel');
+  const btn=document.getElementById('drawer-toggle');
+  const open=panel.classList.toggle('open');
+  btn.classList.toggle('open',open);
+}
+// Close drawer when clicking garden area
+document.addEventListener('click',e=>{
+  const panel=document.getElementById('side-panel');
+  const toggle=document.getElementById('drawer-toggle');
+  if(panel.classList.contains('open') && !panel.contains(e.target) && !toggle.contains(e.target)){
+    panel.classList.remove('open');
+    document.getElementById('drawer-toggle').classList.remove('open');
+  }
+},{passive:true});
+
+// ═══════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    const t=btn.dataset.tab;
+    if(t==='market')renderMarket();
+    if(t==='prestige')renderPrestige();
+    if(t==='crafting')renderCrafting();
+    if(t==='farm')renderFarm();
+  });
+});
+document.getElementById('sfx-btn').addEventListener('click',()=>{S.sfx=!S.sfx;renderHeader();saveGame();});
+document.getElementById('reset-btn').addEventListener('click',()=>{if(confirm('Reset ALL progress?')){localStorage.removeItem('cg_v9');S=mkS();renderAll();}});
+document.getElementById('deselect-btn').addEventListener('click',()=>{S.sel=null;renderSeeds();renderActiveSeed();renderZones();});
+
+// ═══════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════
+loadGame();
+// Safety: always ensure coins is a positive number
+if(!S.coins || isNaN(S.coins) || S.coins < 0) S.coins = 150;
+console.log('[CalmlyGarden] Loaded. Coins:', S.coins, '| Level:', S.level);
+refreshMarket(false);
+renderAll();
+renderFertSlot();
+setInterval(loop,500);
+setInterval(()=>{saveGame();const t=document.getElementById('autosave-tag');if(t){t.textContent='Saved ✓';setTimeout(()=>t.textContent='Autosaved',1500);}},20000);
+</script>
+</body>
+</html>
